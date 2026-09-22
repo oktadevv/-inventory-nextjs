@@ -21,4 +21,4 @@ Open http://localhost:3000
 ## Screenshots
 ![Dashboard](dashboard.png)
 ![Products](products.png)
-![Supplier](Supplier.png)
+![Supplier](supplier.png)
