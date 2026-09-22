@@ -2,8 +2,16 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Package, Truck, ArrowDownToLine, ArrowUpFromLine, History, LogOut, Menu, X, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+
+function LiveDate() {
+  const [s, setS] = useState("");
+  useEffect(() => {
+    setS(new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "short", year: "numeric" }));
+  }, []);
+  return <span className="hidden md:inline text-xs text-slate-500">{s || "…"}</span>;
+}
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -106,7 +114,7 @@ export function AppShell({ children, lowStock = 0, user }: { children: React.Rea
           </form>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-            <span className="hidden md:inline text-xs text-slate-500">Rabu, 9 Sep 2026</span>
+            <LiveDate />
           </div>
         </header>
         <main className="p-4 md:p-6 max-w-[1400px] mx-auto space-y-6">{children}</main>
