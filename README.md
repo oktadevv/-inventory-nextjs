@@ -17,3 +17,8 @@ npx prisma db push
 node prisma/seed.mjs
 npm run dev
 Open http://localhost:3000
+
+## Screenshots
+![Dashboard](dashboard.png)
+![Products](products.png)
+![Supplier](Supplier.png)
