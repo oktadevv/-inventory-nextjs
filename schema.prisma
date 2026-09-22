@@ -1,0 +1,89 @@
+// RR Store Inventory — Prisma schema
+// Dev: SQLite (langsung jalan). Prod: ganti provider ke postgresql.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Role: "ADMIN" | "STAFF" (String karena SQLite tidak support enum)
+// TxType: "IN" | "OUT" | "ADJUSTMENT"
+// TxReason: "PURCHASE" | "SALE" | "DAMAGED" | "SERVICE" | "RETURN" | "VOID" | "OPNAME"
+// Saat migrasi ke PostgreSQL, ganti String -> enum di atas.
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  username     String        @unique
+  email        String        @unique
+  passwordHash String
+  role         String        @default("STAFF")
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  color    String?
+  products Product[]
+}
+
+model Supplier {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  company      String
+  picName      String?
+  whatsapp     String?
+  address      String?
+  note         String?
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  deletedAt    DateTime?
+  products     Product[]
+  transactions Transaction[]
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  sku          String        @unique
+  name         String
+  photoUrl     String?
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  supplierId   String?
+  supplier     Supplier?     @relation(fields: [supplierId], references: [id])
+  buyPrice     Float         @default(0)
+  sellPrice    Float         @default(0)
+  stock        Int           @default(0)
+  minStock     Int           @default(5)
+  isActive     Boolean       @default(true)
+  deletedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  type        String
+  reason      String
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  supplierId  String?
+  supplier    Supplier? @relation(fields: [supplierId], references: [id])
+  qty         Int
+  stockBefore Int
+  stockAfter  Int
+  note        String?
+  refNo       String?
+  date        DateTime  @default(now())
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+}
